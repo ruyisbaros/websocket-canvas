@@ -1,6 +1,6 @@
 import React from "react";
 import rectIcon from "../assets/icons/rectangle.svg";
-import { toolTypes } from "../constants";
+import { toolTypes } from "../constants/toolType";
 import IconButton from "./IconButton";
 
 const Menu = () => {
