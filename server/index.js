@@ -21,6 +21,11 @@ let elements = [];
 io.on("connection", (socket) => {
   console.log("User connected");
   io.to(socket.id).emit("Whiteboard-state", elements);
+
+  socket.on("element-update", (element) => {
+    updateElementInElements(element);
+    socket.broadcast.emit("element-update", element);
+  });
 });
 
 const port = process.env.PORT || 5000;
@@ -28,3 +33,14 @@ const port = process.env.PORT || 5000;
 server.listen(port, () => {
   console.log(`Server runs at port: ${port}...`);
 });
+
+const updateElementInElements = (el) => {
+  const index = elements.findIndex((item) => item.id === el.id);
+  if (index === -1) {
+    elements.push(el);
+    return elements;
+  } else {
+    elements[index] = el;
+    return elements;
+  }
+};

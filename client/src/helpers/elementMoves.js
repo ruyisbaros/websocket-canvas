@@ -1,7 +1,7 @@
-import { useSelector } from "react-redux";
 import rough from "roughjs/bundled/rough.esm";
 import { store } from "../redux/store";
 import { updateCanvasElementsArray } from "../redux/whiteboardSlice";
+import { emitElementUpdate } from "../socketCon";
 const generator = rough.generator();
 
 const generateRectTangle = (x1, y1, x2, y2) => {
@@ -45,6 +45,7 @@ export const updateElement = (
       });
       elementsCopy[index] = updatedElement;
       store.dispatch(updateCanvasElementsArray(elementsCopy));
+      emitElementUpdate(updatedElement);
       break;
     default:
       throw new Error("Something went wrong with updating an element");

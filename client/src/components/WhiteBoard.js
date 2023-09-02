@@ -57,29 +57,31 @@ const WhiteBoard = () => {
 
   //Mouse Up
   const handleMouseUp = () => {
-    const activeElementIndex = canvasElements.findIndex(
-      (el) => el.id === selectedElement.id
-    );
-    const activeElement = canvasElements.find(
-      (el) => el.id === selectedElement.id
-    );
+    if (selectedElement) {
+      const activeElementIndex = canvasElements.findIndex(
+        (el) => el.id === selectedElement.id
+      );
+      const activeElement = canvasElements.find(
+        (el) => el.id === selectedElement.id
+      );
 
-    if (activeElement) {
-      if (action === actions.DRAWING) {
-        if (selectedElement.type === "RECTANGLE") {
-          const { x1, y1, x2, y2 } = adjustCoordinate(activeElement);
-          updateElement(
-            {
-              index: activeElementIndex,
-              id: activeElement.id,
-              x1,
-              y1,
-              x2,
-              y2,
-              type: activeElement.type,
-            },
-            canvasElements
-          );
+      if (activeElement) {
+        if (action === actions.DRAWING) {
+          if (selectedElement.type === "RECTANGLE") {
+            const { x1, y1, x2, y2 } = adjustCoordinate(activeElement);
+            updateElement(
+              {
+                index: activeElementIndex,
+                id: activeElement.id,
+                x1,
+                y1,
+                x2,
+                y2,
+                type: activeElement.type,
+              },
+              canvasElements
+            );
+          }
         }
       }
     }

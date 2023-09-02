@@ -20,7 +20,7 @@ const whiteBoard = createSlice({
       if (index === -1) {
         state.canvasElements.push(action.payload);
       } else {
-        //update
+        state.canvasElements[index] = action.payload;
       }
     },
     updateCanvasElementsArray: (state, action) => {
