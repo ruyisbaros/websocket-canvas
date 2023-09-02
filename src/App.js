@@ -1,7 +1,12 @@
 import React from "react";
+import WhiteBoard from "./components/WhiteBoard";
 
 const App = () => {
-  return <div>App</div>;
+  return (
+    <div>
+      <WhiteBoard />
+    </div>
+  );
 };
 
 export default App;
