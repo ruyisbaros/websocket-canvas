@@ -107,7 +107,8 @@ export const updateElement = (
           toolType: type,
           x1,
           y1,
-
+          x2: x1 + textWidth,
+          y2: y1 + textHeight,
           text,
         }),
       };

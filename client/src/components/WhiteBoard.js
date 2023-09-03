@@ -12,6 +12,7 @@ import {
   updateElement,
 } from "../helpers/elementCreations";
 import { updateCanvasElements } from "../redux/whiteboardSlice";
+import { getElementAtPosition, styleCursor } from "../helpers/elementMoves";
 
 const WhiteBoard = () => {
   const canvasRef = useRef();
@@ -20,7 +21,7 @@ const WhiteBoard = () => {
   const { tool, canvasElements } = useSelector((store) => store.whiteboard);
   const [action, setAction] = useState(null);
   const [selectedElement, setSelectedElement] = useState(null);
-  const [text, setText] = useState("");
+  const [cursorCatch, setCursorCatch] = useState(false);
 
   useLayoutEffect(() => {
     const canvas = canvasRef.current;
@@ -88,6 +89,14 @@ const WhiteBoard = () => {
         );
       }
     }
+    if (tool === toolTypes.SELECTION) {
+      const element = getElementAtPosition(clientX, clientY, canvasElements);
+
+      e.target.style.cursor = element
+        ? styleCursor(element.position)
+        : "default";
+    }
+    //console.log(cursorCatch);
   };
 
   //Mouse Up

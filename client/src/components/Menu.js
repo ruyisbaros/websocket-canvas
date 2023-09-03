@@ -9,6 +9,8 @@ import pencilIcon from "../assets/icons/pencil.svg";
 import pencilIcon2 from "../assets/icons/pencil-w.svg";
 import textIcon from "../assets/icons/txt-file-symbol.svg";
 import textIcon2 from "../assets/icons/txt-file-symbol-w.svg";
+import selectIcon from "../assets/icons/select.svg";
+import selectIcon2 from "../assets/icons/select-w.svg";
 import { toolTypes } from "../constants/toolType";
 import IconButton from "./IconButton";
 
@@ -24,6 +26,11 @@ const Menu = () => {
         src2={rubberIcon2}
         type={toolTypes.RUBBER}
         isRubber={true}
+      />
+      <IconButton
+        src={selectIcon}
+        src2={selectIcon2}
+        type={toolTypes.SELECTION}
       />
     </div>
   );
