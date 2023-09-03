@@ -12,7 +12,12 @@ import {
   updateElement,
 } from "../helpers/elementCreations";
 import { updateCanvasElements } from "../redux/whiteboardSlice";
-import { getElementAtPosition, styleCursor } from "../helpers/elementMoves";
+import {
+  getElementAtPosition,
+  getResizedCoordinate,
+  styleCursor,
+} from "../helpers/elementMoves";
+import { cursorPositions } from "../constants/cursorPosition";
 
 const WhiteBoard = () => {
   const canvasRef = useRef();
@@ -21,7 +26,6 @@ const WhiteBoard = () => {
   const { tool, canvasElements } = useSelector((store) => store.whiteboard);
   const [action, setAction] = useState(null);
   const [selectedElement, setSelectedElement] = useState(null);
-  const [cursorCatch, setCursorCatch] = useState(false);
 
   useLayoutEffect(() => {
     const canvas = canvasRef.current;
@@ -41,29 +45,59 @@ const WhiteBoard = () => {
       return;
     }
 
-    const element = createElement({
-      x1: clientX,
-      y1: clientY,
-      x2: clientX,
-      y2: clientY,
-      toolType: tool,
-      id: uuid(),
-    });
-
     switch (tool) {
       case toolTypes.RECTANGLE:
       case toolTypes.LINE:
       case toolTypes.PENCIL:
         setAction(actions.DRAWING);
+        const element = createElement({
+          x1: clientX,
+          y1: clientY,
+          x2: clientX,
+          y2: clientY,
+          toolType: tool,
+          id: uuid(),
+        });
+        setSelectedElement(element);
+        dispatch(updateCanvasElements(element));
         break;
       case toolTypes.TEXT:
         setAction(actions.WRITING);
+        const element1 = createElement({
+          x1: clientX,
+          y1: clientY,
+          x2: clientX,
+          y2: clientY,
+          toolType: tool,
+          id: uuid(),
+        });
+        setSelectedElement(element1);
+        dispatch(updateCanvasElements(element1));
+        break;
+      case toolTypes.SELECTION:
+        const elementWithPosition = getElementAtPosition(
+          clientX,
+          clientY,
+          canvasElements
+        );
+        if (
+          elementWithPosition &&
+          elementWithPosition.type === toolTypes.RECTANGLE
+        ) {
+          setAction(
+            elementWithPosition.position === cursorPositions.INSIDE
+              ? actions.MOVING
+              : actions.RESIZING
+          );
+          const offsetX = clientX - elementWithPosition.x1;
+          const offsetY = clientY - elementWithPosition.y1;
+          setSelectedElement({ ...elementWithPosition, offsetX, offsetY });
+        }
+
         break;
       default:
         break;
     }
-    setSelectedElement(element);
-    dispatch(updateCanvasElements(element));
   };
 
   //Mouse Move
@@ -96,6 +130,68 @@ const WhiteBoard = () => {
         ? styleCursor(element.position)
         : "default";
     }
+    if (
+      tool === toolTypes.SELECTION &&
+      action === actions.MOVING &&
+      selectedElement
+    ) {
+      const { id, x1, y1, x2, y2, offsetX, offsetY } = selectedElement;
+
+      const width = x2 - x1;
+      const height = y2 - y1;
+
+      const newX1 = clientX - offsetX;
+      const newY1 = clientY - offsetY;
+
+      const index = canvasElements.findIndex((el) => el.id === id);
+
+      if (index !== -1) {
+        updateElement(
+          {
+            index,
+            id,
+            x1: newX1,
+            y1: newY1,
+            x2: newX1 + width,
+            y2: newY1 + height,
+            type: canvasElements[index].type,
+          },
+          canvasElements
+        );
+      }
+    }
+
+    if (
+      tool === toolTypes.SELECTION &&
+      action === actions.RESIZING &&
+      selectedElement
+    ) {
+      const { id, type, position, ...coordinates } = selectedElement;
+      const { x1, y1, x2, y2 } = getResizedCoordinate(
+        clientX,
+        clientY,
+        position,
+        coordinates
+      );
+
+      const index = canvasElements.findIndex((el) => el.id === id);
+
+      if (index !== -1) {
+        updateElement(
+          {
+            index,
+            id,
+            x1,
+            y1,
+            x2,
+            y2,
+            type: canvasElements[index].type,
+          },
+          canvasElements
+        );
+      }
+    }
+
     //console.log(cursorCatch);
   };
 
@@ -110,7 +206,7 @@ const WhiteBoard = () => {
       );
 
       if (activeElement) {
-        if (action === actions.DRAWING) {
+        if (action === actions.DRAWING || action === actions.RESIZING) {
           if (
             selectedElement.type === "RECTANGLE" ||
             selectedElement.type === "LINE"

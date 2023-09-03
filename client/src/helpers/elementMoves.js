@@ -59,3 +59,25 @@ export const styleCursor = (position) => {
       return "move";
   }
 };
+
+export const getResizedCoordinate = (
+  clientX,
+  clientY,
+  position,
+  coordinates
+) => {
+  const { x1, y1, x2, y2 } = coordinates;
+
+  switch (position) {
+    case cursorPositions.TOP_LEFT:
+      return { x1: clientX, y1: clientY, x2, y2 };
+    case cursorPositions.TOP_RIGHT:
+      return { x2: clientX, y1: clientY, x1, y2 };
+    case cursorPositions.BOTTOM_LEFT:
+      return { x1: clientX, y2: clientY, x2, y1 };
+    case cursorPositions.BOTTOM_RIGHT:
+      return { x2: clientX, y2: clientY, x1, y1 };
+    default:
+      break;
+  }
+};
