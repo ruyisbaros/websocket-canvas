@@ -52,6 +52,6 @@ a {
   color: #fff;
 }
 
-.menu_button.active img {
+.menu_button.active img svg path {
   color: #fff;
 }
