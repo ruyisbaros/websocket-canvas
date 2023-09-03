@@ -1,12 +1,20 @@
 import { useDispatch, useSelector } from "react-redux";
-import { setToolType } from "../redux/whiteboardSlice";
+import {
+  setToolType,
+  updateCanvasElementsArray,
+} from "../redux/whiteboardSlice";
+import { emitClearCanvasBox } from "../socketCon";
 
-const IconButton = ({ src, type }) => {
+const IconButton = ({ src, type, isRubber }) => {
   const dispatch = useDispatch();
   const { tool } = useSelector((store) => store.whiteboard);
   //console.log(tool);
   const setTypeOfFigure = () => {
     dispatch(setToolType(type));
+    if (isRubber) {
+      dispatch(updateCanvasElementsArray([]));
+      emitClearCanvasBox();
+    }
   };
   return (
     <button

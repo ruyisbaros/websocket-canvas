@@ -26,10 +26,17 @@ const whiteBoard = createSlice({
     updateCanvasElementsArray: (state, action) => {
       state.canvasElements = action.payload;
     },
+    clearCanvasElementsArray: (state, action) => {
+      state.canvasElements = [];
+    },
   },
 });
 
-export const { setToolType, updateCanvasElements, updateCanvasElementsArray } =
-  whiteBoard.actions;
+export const {
+  setToolType,
+  updateCanvasElements,
+  updateCanvasElementsArray,
+  clearCanvasElementsArray,
+} = whiteBoard.actions;
 
 export default whiteBoard.reducer;

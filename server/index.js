@@ -26,6 +26,11 @@ io.on("connection", (socket) => {
     updateElementInElements(element);
     socket.broadcast.emit("element-update", element);
   });
+
+  socket.on("clear-box", () => {
+    elements = [];
+    socket.broadcast.emit("clear-box");
+  });
 });
 
 const port = process.env.PORT || 5000;

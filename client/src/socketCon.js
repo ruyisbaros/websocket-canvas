@@ -19,8 +19,15 @@ export const connectToSocketServer = () => {
   socket.on("element-update", (el) => {
     store.dispatch(updateCanvasElements(el));
   });
+  socket.on("clear-box", () => {
+    store.dispatch(updateCanvasElementsArray([]));
+  });
 };
 
 export const emitElementUpdate = (elementData) => {
   socket.emit("element-update", elementData);
+};
+
+export const emitClearCanvasBox = () => {
+  socket.emit("clear-box");
 };

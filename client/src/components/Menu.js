@@ -10,7 +10,7 @@ const Menu = () => {
     <div className="menu_container">
       <IconButton src={rectIcon} type={toolTypes.RECTANGLE} />
       <IconButton src={lineIcon} type={toolTypes.LINE} />
-      <IconButton src={rubberIcon} type={toolTypes.RUBBER} />
+      <IconButton src={rubberIcon} type={toolTypes.RUBBER} isRubber={true} />
     </div>
   );
 };
