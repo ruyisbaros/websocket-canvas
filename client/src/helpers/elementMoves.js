@@ -2,12 +2,17 @@ import rough from "roughjs/bundled/rough.esm";
 import { store } from "../redux/store";
 import { updateCanvasElementsArray } from "../redux/whiteboardSlice";
 import { emitElementUpdate } from "../socketCon";
+import { getStroke } from "perfect-freehand";
+import { getSvgPathFromStroke } from "./getSvgPathFromStroke";
 const generator = rough.generator();
 
 const generateRectTangle = (x1, y1, x2, y2) => {
   return generator.rectangle(x1, y1, x2 - x1, y2 - y1);
 };
 const generateLine = (x1, y1, x2, y2) => {
+  return generator.line(x1, y1, x2, y2);
+};
+const generatePencil = (x1, y1, x2, y2) => {
   return generator.line(x1, y1, x2, y2);
 };
 
@@ -36,6 +41,13 @@ export const createElement = ({ x1, y1, x2, y2, toolType, id }) => {
         x2,
         y2,
       };
+    case "PENCIL":
+      //roughElement = generatePencil(x1, y1, x2, y2);
+      return {
+        id,
+        type: toolType,
+        points: [{ x: x1, y: y1 }],
+      };
     default:
       throw new Error("Something went wrong with creating an element");
   }
@@ -62,6 +74,21 @@ export const updateElement = (
       store.dispatch(updateCanvasElementsArray(elementsCopy));
       emitElementUpdate(updatedElement);
       break;
+    case "PENCIL":
+      elementsCopy[index] = {
+        ...elementsCopy[index],
+        points: [
+          ...elementsCopy[index].points,
+          {
+            x: x2,
+            y: y2,
+          },
+        ],
+      };
+      const updatedPencilElement = elementsCopy[index];
+      store.dispatch(updateCanvasElementsArray(elementsCopy));
+      emitElementUpdate(updatedPencilElement);
+      break;
     default:
       throw new Error("Something went wrong with updating an element");
   }
@@ -72,6 +99,9 @@ export const drawElement = ({ roughCanvas, context, el }) => {
     case "LINE":
     case "RECTANGLE":
       return roughCanvas.draw(el.roughElement);
+    case "PENCIL":
+      drawPencilElement(context, el);
+      break;
     default:
       throw new Error("Something went wrong with drawing new element");
   }
@@ -95,4 +125,14 @@ export const adjustCoordinate = (el) => {
       return { x1: x2, y1: y2, x2: x1, y2: y1 };
     }
   }
+};
+
+const drawPencilElement = (context, el) => {
+  const myStroke = getStroke(el.points, {
+    size: 8,
+  });
+  const pathData = getSvgPathFromStroke(myStroke);
+
+  const myPath = new Path2D(pathData);
+  context.fill(myPath);
 };

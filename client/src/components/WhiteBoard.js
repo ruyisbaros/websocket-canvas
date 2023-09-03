@@ -38,7 +38,11 @@ const WhiteBoard = () => {
   const handleMouseDown = (e) => {
     const { clientX, clientY } = e;
     //console.log(clientX, clientY);
-    if (tool === toolTypes.RECTANGLE || tool === toolTypes.LINE) {
+    if (
+      tool === toolTypes.RECTANGLE ||
+      tool === toolTypes.LINE ||
+      tool === toolTypes.PENCIL
+    ) {
       setAction(actions.DRAWING);
 
       const element = createElement({
@@ -52,6 +56,31 @@ const WhiteBoard = () => {
       setSelectedElement(element);
       dispatch(updateCanvasElements(element));
       //console.log(element);
+    }
+  };
+
+  //Mouse Move
+  const handleMouseMove = (e) => {
+    const { clientX, clientY } = e;
+    //console.log(clientX, clientY);
+    if (action === actions.DRAWING) {
+      const indexOfSelectedElement = canvasElements?.findIndex(
+        (el) => el.id === selectedElement.id
+      );
+      if (indexOfSelectedElement !== -1) {
+        updateElement(
+          {
+            index: indexOfSelectedElement,
+            id: canvasElements[indexOfSelectedElement].id,
+            x1: canvasElements[indexOfSelectedElement].x1,
+            y1: canvasElements[indexOfSelectedElement].y1,
+            x2: clientX,
+            y2: clientY,
+            type: canvasElements[indexOfSelectedElement].type,
+          },
+          canvasElements
+        );
+      }
     }
   };
 
@@ -90,30 +119,6 @@ const WhiteBoard = () => {
     }
     setAction(null);
     setSelectedElement(null);
-  };
-
-  const handleMouseMove = (e) => {
-    const { clientX, clientY } = e;
-    //console.log(clientX, clientY);
-    if (action === actions.DRAWING) {
-      const indexOfSelectedElement = canvasElements?.findIndex(
-        (el) => el.id === selectedElement.id
-      );
-      if (indexOfSelectedElement !== -1) {
-        updateElement(
-          {
-            index: indexOfSelectedElement,
-            id: canvasElements[indexOfSelectedElement].id,
-            x1: canvasElements[indexOfSelectedElement].x1,
-            y1: canvasElements[indexOfSelectedElement].y1,
-            x2: clientX,
-            y2: clientY,
-            type: canvasElements[indexOfSelectedElement].type,
-          },
-          canvasElements
-        );
-      }
-    }
   };
 
   return (
