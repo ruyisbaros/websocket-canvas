@@ -10,20 +10,17 @@ import {
   createElement,
   drawElement,
   updateElement,
-} from "../helpers/elementMoves";
+} from "../helpers/elementCreations";
 import { updateCanvasElements } from "../redux/whiteboardSlice";
-
-let selectedElement;
-
-const setSelectedElement = (el) => {
-  selectedElement = el;
-};
 
 const WhiteBoard = () => {
   const canvasRef = useRef();
+  const textareaRef = useRef();
   const dispatch = useDispatch();
   const { tool, canvasElements } = useSelector((store) => store.whiteboard);
   const [action, setAction] = useState(null);
+  const [selectedElement, setSelectedElement] = useState(null);
+  const [text, setText] = useState("");
 
   useLayoutEffect(() => {
     const canvas = canvasRef.current;
@@ -38,25 +35,34 @@ const WhiteBoard = () => {
   const handleMouseDown = (e) => {
     const { clientX, clientY } = e;
     //console.log(clientX, clientY);
-    if (
-      tool === toolTypes.RECTANGLE ||
-      tool === toolTypes.LINE ||
-      tool === toolTypes.PENCIL
-    ) {
-      setAction(actions.DRAWING);
 
-      const element = createElement({
-        x1: clientX,
-        y1: clientY,
-        x2: clientX,
-        y2: clientY,
-        toolType: tool,
-        id: uuid(),
-      });
-      setSelectedElement(element);
-      dispatch(updateCanvasElements(element));
-      //console.log(element);
+    if (selectedElement && action === actions.WRITING) {
+      return;
     }
+
+    const element = createElement({
+      x1: clientX,
+      y1: clientY,
+      x2: clientX,
+      y2: clientY,
+      toolType: tool,
+      id: uuid(),
+    });
+
+    switch (tool) {
+      case toolTypes.RECTANGLE:
+      case toolTypes.LINE:
+      case toolTypes.PENCIL:
+        setAction(actions.DRAWING);
+        break;
+      case toolTypes.TEXT:
+        setAction(actions.WRITING);
+        break;
+      default:
+        break;
+    }
+    setSelectedElement(element);
+    dispatch(updateCanvasElements(element));
   };
 
   //Mouse Move
@@ -120,11 +126,58 @@ const WhiteBoard = () => {
     setAction(null);
     setSelectedElement(null);
   };
+  const handleTextarea = (e) => {
+    const { id, x1, y1, type } = selectedElement;
+    const textElementIndex = canvasElements.findIndex(
+      (el) => el.id === selectedElement.id
+    );
 
+    if (textElementIndex !== -1) {
+      updateElement(
+        {
+          id,
+          x1,
+          y1,
+          type,
+          text: e.target.value,
+          index: textElementIndex,
+        },
+        canvasElements
+      );
+
+      setAction(null);
+      setSelectedElement(null);
+    }
+  };
   return (
     <>
       <Menu />
+      {action === actions.WRITING ? (
+        <textarea
+          ref={textareaRef}
+          onBlur={handleTextarea}
+          placeholder="Text"
+          style={{
+            paddingTop: "12px",
+            maxWidth: "max-content",
+            position: "absolute",
+            top: selectedElement.y1 - 3,
+            left: selectedElement.x1,
+            font: "24px sans-serif",
+            border: 0,
+            outline: 0,
+            padding: 0,
+            margin: 0,
+            resize: "none",
+            overflow: "hidden",
+            whitespace: "pre",
+            //background: "rgba(0,0,0,.03)",
+            borderRadius: "3px",
+          }}
+        />
+      ) : null}
       <canvas
+        id="canvas"
         onMouseDown={handleMouseDown}
         onMouseUp={handleMouseUp}
         onMouseMove={handleMouseMove}
