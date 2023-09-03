@@ -7,12 +7,26 @@ const generator = rough.generator();
 const generateRectTangle = (x1, y1, x2, y2) => {
   return generator.rectangle(x1, y1, x2 - x1, y2 - y1);
 };
+const generateLine = (x1, y1, x2, y2) => {
+  return generator.line(x1, y1, x2, y2);
+};
 
 export const createElement = ({ x1, y1, x2, y2, toolType, id }) => {
   let roughElement;
   switch (toolType) {
     case "RECTANGLE":
       roughElement = generateRectTangle(x1, y1, x2, y2);
+      return {
+        id,
+        roughElement,
+        type: toolType,
+        x1,
+        y1,
+        x2,
+        y2,
+      };
+    case "LINE":
+      roughElement = generateLine(x1, y1, x2, y2);
       return {
         id,
         roughElement,
@@ -34,6 +48,7 @@ export const updateElement = (
   const elementsCopy = [...elements];
   //console.log(type);
   switch (type) {
+    case "LINE":
     case "RECTANGLE":
       const updatedElement = createElement({
         x1,
@@ -54,9 +69,9 @@ export const updateElement = (
 
 export const drawElement = ({ roughCanvas, context, el }) => {
   switch (el.type) {
+    case "LINE":
     case "RECTANGLE":
       return roughCanvas.draw(el.roughElement);
-
     default:
       throw new Error("Something went wrong with drawing new element");
   }

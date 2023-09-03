@@ -38,6 +38,9 @@ a {
   border-radius: 8px;
   transition: all 0.3s;
   background: #fff1dc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .menu_button:hover {
@@ -45,5 +48,10 @@ a {
 }
 
 .menu_button.active {
-  background: #e8d5c4;
+  background: #e8473d;
+  color: #fff;
+}
+
+.menu_button.active img {
+  color: #fff;
 }

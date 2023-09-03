@@ -38,7 +38,7 @@ const WhiteBoard = () => {
   const handleMouseDown = (e) => {
     const { clientX, clientY } = e;
     //console.log(clientX, clientY);
-    if (tool === toolTypes.RECTANGLE) {
+    if (tool === toolTypes.RECTANGLE || tool === toolTypes.LINE) {
       setAction(actions.DRAWING);
 
       const element = createElement({
@@ -67,7 +67,10 @@ const WhiteBoard = () => {
 
       if (activeElement) {
         if (action === actions.DRAWING) {
-          if (selectedElement.type === "RECTANGLE") {
+          if (
+            selectedElement.type === "RECTANGLE" ||
+            selectedElement.type === "LINE"
+          ) {
             const { x1, y1, x2, y2 } = adjustCoordinate(activeElement);
             updateElement(
               {
