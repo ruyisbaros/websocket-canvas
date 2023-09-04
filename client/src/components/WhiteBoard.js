@@ -39,12 +39,9 @@ const WhiteBoard = () => {
 
   const handleMouseDown = (e) => {
     const { clientX, clientY } = e;
-    //console.log(clientX, clientY);
-
     if (selectedElement && action === actions.WRITING) {
       return;
     }
-
     switch (tool) {
       case toolTypes.RECTANGLE:
       case toolTypes.LINE:
@@ -83,7 +80,8 @@ const WhiteBoard = () => {
         if (
           elementWithPosition &&
           (elementWithPosition.type === toolTypes.RECTANGLE ||
-            elementWithPosition.type === toolTypes.TEXT)
+            elementWithPosition.type === toolTypes.TEXT ||
+            elementWithPosition.type === toolTypes.LINE)
         ) {
           setAction(
             elementWithPosition.position === cursorPositions.INSIDE
