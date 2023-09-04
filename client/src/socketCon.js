@@ -4,6 +4,10 @@ import {
   updateCanvasElements,
   updateCanvasElementsArray,
 } from "./redux/whiteboardSlice";
+import {
+  reduxFilterDisconnectedUser,
+  reduxUpdateCursorPosition,
+} from "./redux/cursorSlice";
 let socket;
 
 export const connectToSocketServer = () => {
@@ -22,6 +26,12 @@ export const connectToSocketServer = () => {
   socket.on("clear-box", () => {
     store.dispatch(updateCanvasElementsArray([]));
   });
+  socket.on("cursor-position", (data) => {
+    store.dispatch(reduxUpdateCursorPosition(data));
+  });
+  socket.on("user-disconnected", (id) => {
+    store.dispatch(reduxFilterDisconnectedUser(id));
+  });
 };
 
 export const emitElementUpdate = (elementData) => {
@@ -30,4 +40,8 @@ export const emitElementUpdate = (elementData) => {
 
 export const emitClearCanvasBox = () => {
   socket.emit("clear-box");
+};
+
+export const emitCursorPosition = (cursorData) => {
+  socket.emit("cursor-position", cursorData);
 };

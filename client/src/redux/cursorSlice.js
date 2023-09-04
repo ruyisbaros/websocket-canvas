@@ -27,9 +27,15 @@ const crSlice = createSlice({
         });
       }
     },
+    reduxFilterDisconnectedUser: (state, action) => {
+      state.cursors = state.cursors.filter(
+        (usr) => usr.userId !== action.payload
+      );
+    },
   },
 });
 
-export const { reduxUpdateCursorPosition } = crSlice.actions;
+export const { reduxUpdateCursorPosition, reduxFilterDisconnectedUser } =
+  crSlice.actions;
 
 export default crSlice.reducer;

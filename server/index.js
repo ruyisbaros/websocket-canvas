@@ -31,6 +31,17 @@ io.on("connection", (socket) => {
     elements = [];
     socket.broadcast.emit("clear-box");
   });
+
+  socket.on("cursor-position", (data) => {
+    socket.broadcast.emit("cursor-position", {
+      ...data,
+      userId: socket.id,
+    });
+  });
+
+  socket.on("disconnect", () => {
+    socket.broadcast.emit("user-disconnected", socket.id);
+  });
 });
 
 const port = process.env.PORT || 5000;

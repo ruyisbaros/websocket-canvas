@@ -55,3 +55,7 @@ a {
 .menu_button.active img svg path {
   color: #fff;
 }
+
+.cursor {
+  transition: all 0.1s;
+}

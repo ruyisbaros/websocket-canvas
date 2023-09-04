@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import WhiteBoard from "./components/WhiteBoard";
 import { connectToSocketServer } from "./socketCon";
+import CursorOverlay from "./crOverlay/CursorOverlay";
 
 const App = () => {
   useEffect(() => {
@@ -9,6 +10,7 @@ const App = () => {
   return (
     <div>
       <WhiteBoard />
+      <CursorOverlay />
     </div>
   );
 };

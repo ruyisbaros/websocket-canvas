@@ -19,6 +19,10 @@ import {
   updateEachPointPosition,
 } from "../helpers/elementMoves";
 import { cursorPositions } from "../constants/cursorPosition";
+import { emitCursorPosition } from "../socketCon";
+
+let emitCursor = true;
+let lastCursorPosition;
 
 const WhiteBoard = () => {
   const canvasRef = useRef();
@@ -117,7 +121,17 @@ const WhiteBoard = () => {
   //Mouse Move
   const handleMouseMove = (e) => {
     const { clientX, clientY } = e;
-    //console.log(clientX, clientY);
+    lastCursorPosition = { x: clientX, y: clientY };
+    if (emitCursor) {
+      emitCursorPosition({ x: clientX, y: clientY });
+      emitCursor = false;
+      console.log("event fired"); //Too much. Need to be reduced
+      setTimeout(() => {
+        emitCursor = true;
+        emitCursorPosition(lastCursorPosition);
+      }, [50]);
+    }
+
     if (action === actions.DRAWING) {
       const indexOfSelectedElement = canvasElements?.findIndex(
         (el) => el.id === selectedElement.id
