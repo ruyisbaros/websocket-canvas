@@ -41,7 +41,12 @@ const isInPosition = (x, y, el) => {
           : null;
 
       return topLeft || topRight || bottomLeft || bottomRight || inside;
-
+    case "TEXT":
+      const inside1 =
+        x >= x1 && x <= x2 && y >= y1 && y <= y2
+          ? cursorPositions.INSIDE
+          : null;
+      return inside1;
     default:
       break;
   }

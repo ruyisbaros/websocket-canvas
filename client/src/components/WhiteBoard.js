@@ -82,7 +82,8 @@ const WhiteBoard = () => {
         );
         if (
           elementWithPosition &&
-          elementWithPosition.type === toolTypes.RECTANGLE
+          (elementWithPosition.type === toolTypes.RECTANGLE ||
+            elementWithPosition.type === toolTypes.TEXT)
         ) {
           setAction(
             elementWithPosition.position === cursorPositions.INSIDE
@@ -135,7 +136,7 @@ const WhiteBoard = () => {
       action === actions.MOVING &&
       selectedElement
     ) {
-      const { id, x1, y1, x2, y2, offsetX, offsetY } = selectedElement;
+      const { id, x1, y1, x2, y2, offsetX, offsetY, text } = selectedElement;
 
       const width = x2 - x1;
       const height = y2 - y1;
@@ -155,6 +156,7 @@ const WhiteBoard = () => {
             x2: newX1 + width,
             y2: newY1 + height,
             type: canvasElements[index].type,
+            text,
           },
           canvasElements
         );
