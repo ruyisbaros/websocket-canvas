@@ -16,6 +16,7 @@ import {
   getElementAtPosition,
   getResizedCoordinate,
   styleCursor,
+  updateEachPointPosition,
 } from "../helpers/elementMoves";
 import { cursorPositions } from "../constants/cursorPosition";
 
@@ -92,7 +93,21 @@ const WhiteBoard = () => {
           const offsetY = clientY - elementWithPosition.y1;
           setSelectedElement({ ...elementWithPosition, offsetX, offsetY });
         }
+        if (
+          elementWithPosition &&
+          elementWithPosition.type === toolTypes.PENCIL
+        ) {
+          setAction(actions.MOVING);
 
+          const xOffsets = elementWithPosition.points?.map(
+            (point) => clientX - point.x
+          );
+          const yOffsets = elementWithPosition.points?.map(
+            (point) => clientY - point.y
+          );
+
+          setSelectedElement({ ...elementWithPosition, xOffsets, yOffsets });
+        }
         break;
       default:
         break;
@@ -128,6 +143,25 @@ const WhiteBoard = () => {
       e.target.style.cursor = element
         ? styleCursor(element.position)
         : "default";
+    }
+    if (
+      tool === toolTypes.SELECTION &&
+      action === actions.MOVING &&
+      selectedElement.type === toolTypes.PENCIL &&
+      selectedElement
+    ) {
+      const { id } = selectedElement;
+
+      const newPoints = selectedElement.points?.map((p, index) => ({
+        x: clientX - selectedElement.xOffsets[index],
+        y: clientY - selectedElement.yOffsets[index],
+      }));
+
+      const index = canvasElements.findIndex((el) => el.id === id);
+      if (index !== -1) {
+        updateEachPointPosition(newPoints, index, canvasElements, id);
+      }
+      return;
     }
     if (
       tool === toolTypes.SELECTION &&

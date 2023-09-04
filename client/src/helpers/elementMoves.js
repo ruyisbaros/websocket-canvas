@@ -1,8 +1,7 @@
-import rough from "roughjs/bundled/rough.esm";
+import { cursorPositions } from "../constants/cursorPosition";
 import { store } from "../redux/store";
 import { updateCanvasElementsArray } from "../redux/whiteboardSlice";
 import { emitElementUpdate } from "../socketCon";
-import { cursorPositions } from "../constants/cursorPosition";
 
 export const getElementAtPosition = (x, y, elements) => {
   //x and y are the position of mouse
@@ -59,6 +58,21 @@ const isInPosition = (x, y, el) => {
           : null;
 
       return on || start || end;
+    case "PENCIL":
+      const betweenAnyPoint = el.points.some((point, index) => {
+        const nextPoint = el.points[index + 1];
+        if (!nextPoint) return false;
+        return onLine({
+          x1: point.x,
+          y1: point.y,
+          x2: nextPoint.x,
+          y2: nextPoint.y,
+          x,
+          y,
+          maxDistance: 5,
+        });
+      });
+      return betweenAnyPoint ? cursorPositions.INSIDE : null;
     default:
       break;
   }
@@ -72,6 +86,7 @@ const onLine = ({ x1, y1, x2, y2, x, y, maxDistance = 2 }) => {
   const offset = distance(a, b) - (distance(a, c) + distance(b, c));
   return Math.abs(offset) < maxDistance ? cursorPositions.INSIDE : null;
 };
+
 const distance = (a, b) =>
   Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2)); //distance between 2 points on canvas
 
@@ -113,4 +128,21 @@ export const getResizedCoordinate = (
     default:
       return null;
   }
+};
+
+export const updateEachPointPosition = (
+  newPoints,
+  index,
+  canvasElements,
+  id
+) => {
+  const copyOfElements = [...canvasElements];
+  copyOfElements[index] = {
+    ...copyOfElements[index],
+    points: newPoints,
+  };
+
+  const updatedPencilElement = copyOfElements[index];
+  store.dispatch(updateCanvasElementsArray(copyOfElements));
+  emitElementUpdate(updatedPencilElement);
 };
